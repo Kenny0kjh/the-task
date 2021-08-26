@@ -1,0 +1,162 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Document</title>
+    <style>
+        body{
+            background-color: #f38c78;
+        }
+        .todolist{
+            position: relative;
+            width: 400px;
+            height: 800px;
+            margin: 100px auto;
+            background-color: #2f3d4a;
+            border-radius: 20px;
+            box-shadow: 5px 5px 5px #2f3d4a;
+        }
+        h1{
+            margin: 30px 140px;
+            position: absolute;
+            color: white;
+        }
+        .newtodos{
+            width: 300px;
+            font-size: 16px;
+            line-height: 50px;
+            border-radius: 25px;
+            margin-top: 100px;
+            margin-left: 50px;
+            outline: none;
+            height: 50px;
+            background: white;
+            border: 2px solid orange;
+            font-weight: 300;
+            padding: 0px 10px;
+            font-family: font;
+            letter-spacing: 2px;
+            text-transform: uppercase;
+            color: orange;
+        }
+
+    </style>
+    <script src="./jquery-3.6.0.min.js"></script>
+    <script>
+        $(function () {
+
+                load();
+                $("#title").on("keydown", function (event) {
+                    if (event.keyCode === 13) {
+                        if ($(this).val() === "") {
+                            alert("请输入事务");
+                        } else {
+                   
+                            var local = getDate();
+                  
+              
+                            local.push({ title: $(this).val(), done: false });
+              
+                            saveDate(local);
+              
+                            load();
+                            $(this).val("");
+                        }
+                    }
+                });
+    
+                $("ol, ul").on("click", "a", function () {
+     
+                    var data = getDate();
+                    console.log(data);
+          
+                    var index = $(this).attr("id");
+                    console.log(index);
+                    data.splice(index, 1);
+          
+                    saveDate(data);
+      
+                    load();
+                });
+    
+                $("ol, ul").on("click", "input", function () {
+                
+                    var data = getDate();
+             
+                    var index = $(this).siblings("a").attr("id");
+                    console.log(index);
+           
+                    data[index].done = $(this).prop("checked");
+                    console.log(data);
+
+
+                    saveDate(data);
+      
+                    load();
+                });
+ 
+                function getDate() {
+                    var data = localStorage.getItem("todolist");
+                    if (data !== null) {
+
+                        return JSON.parse(data);
+                    } else {
+                        return [];
+                    }
+                }
+
+                function saveDate(data) {
+                    localStorage.setItem("todolist", JSON.stringify(data));
+                }
+
+                function load() {
+
+                    var data = getDate();
+                    console.log(data);
+
+                    $("ol, ul").empty();
+                    var todoCount = 0; 
+                    var doneCount = 0; 
+
+                    $.each(data, function (i, n) {
+                        // console.log(n);
+                        if (n.done) {
+                            $("ul").prepend("<li><input type='checkbox' checked='checked' > <p>" + n.title + "</p> <a href='javascript:;' id=" + i + " ></a></li>");
+                            doneCount++;
+                        } else {
+                            $("ol").prepend("<li><input type='checkbox' > <p>" + n.title + "</p> <a href='javascript:;' id=" + i + " ></a></li>");
+                            todoCount++;
+                        }
+
+                    });
+                    $("#todocount").text(todoCount);
+                    $("#donecount").text(doneCount);
+
+                }
+
+            })
+    </script>
+</head>
+<body>
+    <div class="todolist">
+        <div class="header">
+            <h1>Todos</h1>
+            <input type="text" id="title" name="title" class="newtodos" placeholder="添加新的事务" required="required" autocomplete="off">
+        </div>
+        <div class="main">
+            <h2>正在进行 <span id="todocount"></span></h2>
+            <ol id="todolist" class="demo-box">
+            
+            </ol>
+            <h2>已经完成 <span id="donecount"></span></h2>
+            <ul id="donelist">
+            
+            </ul>
+        </div>
+    </div>
+    
+   
+</body>
+</html>
